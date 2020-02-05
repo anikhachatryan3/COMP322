@@ -11,14 +11,25 @@
 #include <stdlib.h>
 #include <math.h>
 
-
+void readFile() {
+    char arr[8];
+    // int count;
+    // int i = 0;
+    FILE *rFile = fopen("inputFile.txt", "r");
+    // fscanf(rFile, "%s", c);
+    while((fscanf(rFile, "%s", arr)) != EOF) {
+        printf("%s\n", arr);
+    }
+    fclose(rFile);
+}
 
 int main() {
+    printf("\nOriginal   ASCII   Decimal   Parity\n");
+    printf("--------  -------  --------  -------\n");
+    readFile();
+    printf("\n");
 
-    printf("\nOriginal   ASCII   Decimal   Parity   T. Error\n");
-    printf("--------  -------  --------  -------  ---------\n");
-    // printf("                    %f                         \n");
-
+    return 0;
 }
 
 
