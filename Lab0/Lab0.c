@@ -53,8 +53,113 @@ void binToDecAndChar(int dec) {
         dec -= 128;
     }
     //print decimal as ASCII character
-    printf("\t%c", (char)dec);
-
+    if(dec > 32 && dec != 127) {
+        printf("\t%c", (char)dec);
+    }
+    else {
+        if(dec == 0) {
+            printf("\tNUL");
+        }
+        else if(dec == 1) {
+            printf("\tSOH");
+        }
+        else if(dec == 2) {
+            printf("\tSTX");
+        }
+        else if(dec == 3) {
+            printf("\tETX");
+        }
+        else if(dec == 4) {
+            printf("\tEOT");
+        }
+        else if(dec == 5) {
+            printf("\tENQ");
+        }
+        else if(dec == 6) {
+            printf("\tACK");
+        }
+        else if(dec == 7) {
+            printf("\tBEL");
+        }
+        else if(dec == 8) {
+            printf("\tBS");
+        }
+        else if(dec == 9) {
+            printf("\tTAB");
+        }
+        else if(dec == 10) {
+            printf("\tLF");
+        }
+        else if(dec == 11) {
+            printf("\tVT");
+        }
+        else if(dec == 12) {
+            printf("\tFF");
+        }
+        else if(dec == 13) {
+            printf("\tCR");
+        }
+        else if(dec == 14) {
+            printf("\tSO");
+        }
+        else if(dec == 15) {
+            printf("\tSI");
+        }
+        else if(dec == 16) {
+            printf("\tDLE");
+        }
+        else if(dec == 17) {
+            printf("\tDC1");
+        }
+        else if(dec == 18) {
+            printf("\tDC2");
+        }
+        else if(dec == 19) {
+            printf("\tDC3");
+        }
+        else if(dec == 20) {
+            printf("\tDC4");
+        }
+        else if(dec == 21) {
+            printf("\tNAK");
+        }
+        else if(dec == 22) {
+            printf("\tSYN");
+        }
+        else if(dec == 23) {
+            printf("\tETB");
+        }
+        else if(dec == 24) {
+            printf("\tCAN");
+        }
+        else if(dec == 25) {
+            printf("\tEM");
+        }
+        else if(dec == 26) {
+            printf("\tSUB");
+        }
+        else if(dec == 27) {
+            printf("\tESC");
+        }
+        else if(dec == 28) {
+            printf("\tFS");
+        }
+        else if(dec == 29) {
+            printf("\tGS");
+        }
+        else if(dec == 30) {
+            printf("\tRS");
+        }
+        else if(dec == 31) {
+            printf("\tUS");
+        }
+        else if(dec == 32) {
+            printf("\tSpace");
+        }
+        else if(dec == 127) {
+            printf("\tDEL");
+        }
+    }
     //print ascii decimal
     printf("\t%d", dec);
 
