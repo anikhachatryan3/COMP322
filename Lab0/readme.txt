@@ -1,13 +1,5 @@
-Name: Ani Khachatryan
-Date: 25 January 2020
-Class: COMP322/L
-Lab: Lab0 - Making Sense of Ones and Zeros
 
-Git URL: https://github.com/anikhachatryan3/COMP322/tree/complete/Lab0
-CSUN Student ID: 109327463
-CSUN Student Email Address: ani.khachatryan.961@my.csun.edu
-
-Copy of README Document:
+README Document:
 
 01/25/2020: I created the Lab0 assignment in GitHub. I created a .gitignore file, which is the 
             only thing that is available so far.
@@ -42,5 +34,5 @@ Copy of README Document:
             to, so I rewrote and rearranged a couple areas of my code to use read(), argc, and 
             argv. I also separated some parts of my code that were being called in the readFile 
             method. I also added the if statements into the main to check if user is giving a file 
-            or just regular inputs, and created the method to read the inputs.
+            or just regular inputs.
             Status: completed

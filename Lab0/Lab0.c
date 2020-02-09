@@ -10,25 +10,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 int i;
-//decimal variable
-int dec;
 //counter variable
 int count = 0;
 //new char array to store file content in
-char arr[9];  //was arr[8], but gave "abort trap: 6"
+char arr[9];
 //new int array for storing converted char array as int
 int array[8];
 
+//method that checks if number is even or odd
+void checkParity(int count) {
+    //if divisible by 2
+    if(count%2 == 0) {
+        //then print even
+        printf("\tEVEN");
+    }
+    //if not
+    else {
+        //then print odd
+        printf("\tODD");
+    }
+}
+
 //method to convert from binary to decimal
 void binToDecAndChar(int dec) {
-    dec = 0;
+    count = 0;
+    //decimal variable
     for(i = 0; i < 8; i++) {
         //if there is a 1 in the binary number
         if(array[i] == 1) {
-            //convert to decimal
-            dec += pow(2, 8-i)/2;
             //increment counter
             count++;
         }
@@ -44,71 +57,134 @@ void binToDecAndChar(int dec) {
 
     //print ascii decimal
     printf("\t%d", dec);
+
+    //print if even or odd
+    checkParity(count);
 }
 
-//method to check if number is odd or even
-void checkParity(int count) {
-    //if divisible by 2:
-    if(count%2 == 0) {
-        //then print even
-        printf("\tEVEN");
-    }
-    //if not:
-    else {
-        //then print odd
-        printf("\tODD");
-    }
-}
-
-//method to convert char array to int array
+//method that converts binary to decimal
 void convert(char* arr) {
+    //decimal variable
+    int dec = 0;
     for(int i = 0; i < 8; i++) {
-            //converting from char to int and storing in int array
-            array[i] = arr[i] - '0';
-            //printing int array
-            printf("%d", array[i]);
-        }
+        //converting from char to int and storing in int array
+        array[i] = arr[i] - '0';
+        //printing int array
+        printf("%d", array[i]);
+        //converting binary to decimal
+        dec += (arr[i] - '0') << (7-i);
+    }
+    //call method to convert to decimal and ASCII
+    binToDecAndChar(dec);
+}
+
+void padding(char* arr, int counter) {
+    for(i = counter; i < 8; i++) {
+        arr[counter] = '0';
+        counter++;
+    }
+    arr[9] = '\0';
+
+    convert(arr);
 }
 
 //method to read the file
-void readFile() {
+void readFile(char* filename) {
+    //file destination variable
+    int fd;
+    //buffer variable
+    char buffer;
+    //counter variable
+    int counter = 0;
     //opening and reading file
-    FILE *rFile = fopen("inputFile.txt", "r");
-    //reading/scanning content in file until end of file
-    while((fscanf(rFile, "%s", arr)) != EOF) {
-        //
-        int nul = 0;
-        for(i = 0; i < 8; i++) {
-            if(arr[i] == '\0') {
-                nul = 1;
-            }
-            //if binary number is less than 8:
-            if(nul == 1) {
-                //pad with zeros (0) to the right of binary number
-                arr[i] = '0';
-            }
+    fd = open(filename, O_RDONLY);
+    while(read(fd, &buffer, 1) > 0) {
+        //if buffer is a number
+        if(buffer == '0' || buffer == '1') {
+            //store into char array
+            arr[counter] = buffer;
+            //increment counter
+            counter++;
         }
+        //if buffer is not a number or is a space
+        if((buffer == ' ' || buffer == '\n') || (buffer != '1' && buffer != '0')) {
+            //check if counter is less than 8. if so
+            if(counter < 8) {
+                //pad numer/array
+                padding(arr, counter); 
+            }
+            //if not
+            else {
+                //just convert (skip padding)
+                convert(arr);
+            }
+            //reset counter
+            counter = 0;
 
-        convert(arr);
-
-        //calling method to convert binary number to decimal and ASCII
-        binToDecAndChar(dec);
-
-        //checking if even or odd
-        checkParity(count);
-        //resetting counter
-        count = 0;
-
-        printf("\n");
+            printf("\n");
+        }
     }
-    fclose(rFile);
 }
 
+//method to read argv as input (not from a file)
+void readArg(char* argv) {
+    //counter variable
+    int counter = 0;
+    for(i = 0; i <= 8; i++) {
+        //if argv is a number
+        if(argv[i] == '0' || argv[i] == '1') {
+            //save number to arr (char array)
+            arr[counter] = argv[i];
+            //increment counter
+            counter++;
+        }
+        //if argv is a space, new line, or not a number
+        if((argv[i] == ' ' || argv[i] == '\n') || (argv[i] != '1' && argv[i] != '0')) {
+            //if counter is less than 8
+            if(counter < 8) {
+                //call method to add padding
+                padding(arr, counter);
+            }
+            //else
+            else {
+                //just convert (skip padding)
+                convert(arr);
+            }
+            //reset counter
+            counter = 0;
 
-int main() {
+            printf("\n");
+        }
+    }
+}
+
+//main method
+int main(int argc, char** argv) {
     printf("\nOriginal   ASCII    Decimal    Parity\n");
     printf("--------   -------  --------   --------\n");
-    readFile();
+    //if no input given
+    if(argc <= 1) {
+        //Error out
+        printf("Error");
+        return 1;
+    }
+    //else
+    else {
+        //if input is a number or '-'
+        if(argv[1][0] == '1' || argv[1][0] == '0'|| argv[1][0] == '-') {
+            //call method to convert inputs
+            int i = 1;
+            while(i < argc) {
+                readArg(argv[i]);
+                i++;
+            }
+        }
+        //if input is not a number or '-'
+        else if(!(argv[1][0] == '1' || argv[1][0] == '0'|| argv[1][0] == '-')) {
+            //call method to read file
+            readFile(argv[1]);
+        }
+    }
     printf("\n");
 
     return 0;
