@@ -36,3 +36,8 @@ README Document:
             method. I also added the if statements into the main to check if user is giving a file 
             or just regular inputs.
             Status: completed
+            
+02/15/2020: I made the code print nothing but the headers and the lines under if the user gives no 
+            actual inputs after the '-'. I also added a few more checks to make sure to error out 
+            if the given input is invalid.
+            Status: completed

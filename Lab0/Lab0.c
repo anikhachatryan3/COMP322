@@ -8,10 +8,11 @@
 //         the number of 1's set.
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <math.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <ctype.h>
+#include <stdbool.h>
 
 int i;
 //counter variable
@@ -54,110 +55,114 @@ void binToDecAndChar(int dec) {
     }
     //print decimal as ASCII character
     if(dec > 32 && dec != 127) {
-        printf("\t%c", (char)dec);
+        //check if number is ascii
+        if(isascii(dec)) {
+            printf("\t%c", (char)dec);
+        }
     }
+    //if non printable ascii character, look for them here and print
     else {
         if(dec == 0) {
-            printf("\tNUL");
+            printf("      NUL");
         }
         else if(dec == 1) {
-            printf("\tSOH");
+            printf("      SOH");
         }
         else if(dec == 2) {
-            printf("\tSTX");
+            printf("      STX");
         }
         else if(dec == 3) {
-            printf("\tETX");
+            printf("      ETX");
         }
         else if(dec == 4) {
-            printf("\tEOT");
+            printf("      EOT");
         }
         else if(dec == 5) {
-            printf("\tENQ");
+            printf("      ENQ");
         }
         else if(dec == 6) {
-            printf("\tACK");
+            printf("      ACK");
         }
         else if(dec == 7) {
-            printf("\tBEL");
+            printf("      BEL");
         }
         else if(dec == 8) {
-            printf("\tBS");
+            printf("      BS");
         }
         else if(dec == 9) {
-            printf("\tTAB");
+            printf("      TAB");
         }
         else if(dec == 10) {
-            printf("\tLF");
+            printf("      LF");
         }
         else if(dec == 11) {
-            printf("\tVT");
+            printf("      VT");
         }
         else if(dec == 12) {
-            printf("\tFF");
+            printf("      FF");
         }
         else if(dec == 13) {
-            printf("\tCR");
+            printf("      CR");
         }
         else if(dec == 14) {
-            printf("\tSO");
+            printf("      SO");
         }
         else if(dec == 15) {
-            printf("\tSI");
+            printf("      SI");
         }
         else if(dec == 16) {
-            printf("\tDLE");
+            printf("      DLE");
         }
         else if(dec == 17) {
-            printf("\tDC1");
+            printf("      DC1");
         }
         else if(dec == 18) {
-            printf("\tDC2");
+            printf("      DC2");
         }
         else if(dec == 19) {
-            printf("\tDC3");
+            printf("      DC3");
         }
         else if(dec == 20) {
-            printf("\tDC4");
+            printf("      DC4");
         }
         else if(dec == 21) {
-            printf("\tNAK");
+            printf("      NAK");
         }
         else if(dec == 22) {
-            printf("\tSYN");
+            printf("      SYN");
         }
         else if(dec == 23) {
-            printf("\tETB");
+            printf("      ETB");
         }
         else if(dec == 24) {
-            printf("\tCAN");
+            printf("      CAN");
         }
         else if(dec == 25) {
-            printf("\tEM");
+            printf("      EM");
         }
         else if(dec == 26) {
-            printf("\tSUB");
+            printf("      SUB");
         }
         else if(dec == 27) {
-            printf("\tESC");
+            printf("      ESC");
         }
         else if(dec == 28) {
-            printf("\tFS");
+            printf("      FS");
         }
         else if(dec == 29) {
-            printf("\tGS");
+            printf("      GS");
         }
         else if(dec == 30) {
-            printf("\tRS");
+            printf("      RS");
         }
         else if(dec == 31) {
-            printf("\tUS");
+            printf("      US");
         }
         else if(dec == 32) {
-            printf("\tSpace");
+            printf("    Space");
         }
         else if(dec == 127) {
-            printf("\tDEL");
+            printf("      DEL");
         }
     }
     //print ascii decimal
@@ -183,13 +188,16 @@ void convert(char* arr) {
     binToDecAndChar(dec);
 }
 
+//method to add padding
 void padding(char* arr, int counter) {
+    //pad until i < 8
     for(i = counter; i < 8; i++) {
         arr[counter] = '0';
+        //increment counter
         counter++;
     }
     arr[9] = '\0';
-
+    //call method to convert binary numbers
     convert(arr);
 }
 
@@ -203,31 +211,40 @@ void readFile(char* filename) {
     int counter = 0;
     //opening and reading file
     fd = open(filename, O_RDONLY);
-    while(read(fd, &buffer, 1) > 0) {
-        //if buffer is a number
-        if(buffer == '0' || buffer == '1') {
-            //store into char array
-            arr[counter] = buffer;
-            //increment counter
-            counter++;
-        }
-        //if buffer is not a number or is a space
-        if((buffer == ' ' || buffer == '\n') || (buffer != '1' && buffer != '0')) {
-            //check if counter is less than 8. if so
-            if(counter < 8) {
-                //pad numer/array
-                padding(arr, counter); 
+    if(fd != -1) {
+        printf("\nOriginal   ASCII    Decimal    Parity\n");
+        printf("--------   -------  --------   --------\n");
+        //while number of content in file being read is greater than 0
+        while(read(fd, &buffer, 1) > 0) {
+            //if buffer is a number
+            if(buffer == '0' || buffer == '1') {
+                //store into char array
+                arr[counter] = buffer;
+                //increment counter
+                counter++;
             }
-            //if not
-            else {
-                //just convert (skip padding)
-                convert(arr);
+            //if buffer is not a number or is a space
+            if((buffer == ' ' || buffer == '\n') || (buffer != '1' && buffer != '0')) {
+                //check if counter is less than 8. if so
+                if(counter < 8) {
+                    //pad numer/array
+                    padding(arr, counter); 
+                }
+                //if not
+                else {
+                    //just convert (skip padding)
+                    convert(arr);
+                }
+                //reset counter
+                counter = 0;
+                printf("\n");
             }
-            //reset counter
-            counter = 0;
-
-            printf("\n");
         }
+    } 
+    //otherwise
+    else {
+        //error
+        printf("\nError. Invalid file.\n");
     }
 }
 
@@ -244,7 +261,7 @@ void readArg(char* argv) {
             counter++;
         }
         //if argv is a space, new line, or not a number
-        if((argv[i] == ' ' || argv[i] == '\n') || (argv[i] != '1' && argv[i] != '0')) {
+        else if((argv[i] == ' ' || argv[i] == '\n') || (argv[i] != '1' && argv[i] != '0')) {
             //if counter is less than 8
             if(counter < 8) {
                 //call method to add padding
@@ -257,30 +274,78 @@ void readArg(char* argv) {
             }
             //reset counter
             counter = 0;
-
             printf("\n");
+        } 
+        //otherwise
+        else {
+            //error
+            printf("\nError. Invalid input given.\n");
+            //break the loop
+            break;
         }
     }
 }
 
+//method to check if given 8 bit binary is valid input
+bool validate8Bit(char* arr) {
+    for(int k = 0; k < 8; k++) {
+        //if arr[k] reaches end of file
+        if(arr[k] == '\0') {
+            //it's fine (break)
+            break;
+        }
+        //otherwise
+        else {
+            //if arr[k] is not 0 or 1
+            if(arr[k] != '1' && arr[k] != '0') {
+                //not good (false)
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 //main method
 int main(int argc, char** argv) {
-    printf("\nOriginal   ASCII    Decimal    Parity\n");
-    printf("--------   -------  --------   --------\n");
     //if no input given
     if(argc <= 1) {
-        //Error out
-        printf("Error");
+        //error out
+        printf("\nError. Please provide input.\n\n");
         return 1;
     }
     //else
     else {
         //if input is a number or '-'
         if(argv[1][0] == '1' || argv[1][0] == '0'|| argv[1][0] == '-') {
-            //call method to convert inputs
+            //initialize i to equal 1
             int i = 1;
+            //if first input is '-'
+            if(argv[1][0] == '-') {
+                //then i = 2 and print nothing (except the headers and lines)
+                i = 2;
+                printf("");
+            }
+            //initialize j to equal i
+            int j = i;
+            //while j is less than number of inputs (argc)
+            while(j < argc) {
+                //if given input not valid
+                if(!validate8Bit(argv[j])) {
+                    //error
+                    printf("\nError. Invalid input given.\n\n");
+                    return 1;
+                }
+                //increment j
+                j++;
+            }
+            printf("\nOriginal   ASCII    Decimal    Parity\n");
+            printf("--------   -------  --------   --------\n");
+            //while i is less than number of inputs (argc)
             while(i < argc) {
+                //call method
                 readArg(argv[i]);
+                //increment i
                 i++;
             }
         }
@@ -291,6 +356,5 @@ int main(int argc, char** argv) {
         }
     }
     printf("\n");
-
     return 0;
 }
