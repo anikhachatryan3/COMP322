@@ -1,0 +1,17 @@
+Name: Ani Khachatryan
+Date: 22 February 2020
+Class: COMP 322/L
+Assignment: Lab 1 - Time and Forking Children
+
+Git URL: 
+CSUN Student ID: 109327463
+CSUN Student Email Address: ani.khachatryan.961@my.csun.edu
+
+Copy of README Document:
+
+02/22/2020: I just started working on the project. I created the Lab1.c file, the README 
+            file, the makefile, and the AniKhachatryan file to submit. So far, I have gotten
+            the child process and parent process to both work successfully. I just need to 
+            get the USER, CUSER, SYS, and CSYS to print correctly along with making sure if 
+            the RETVAL is correct.
+            Status: working; mostly complete.
