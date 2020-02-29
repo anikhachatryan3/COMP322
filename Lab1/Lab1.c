@@ -29,7 +29,7 @@ void childTime(clock_t user, clock_t system) {
 //method for parent process
 void parentProcess(pid_t parent, pid_t pid, pid_t child, int status) {
     //print pid, ppid, cpid, and retVal
-    printf("PPID: %d, PID: %d, CPID: %d, RETVAL: %d\n", parent, pid, child, WIFEXITED(status)); //WEXITSTATUS(status)?
+    printf("PPID: %d, PID: %d, CPID: %d, RETVAL: %d\n", parent, pid, child, status); //WEXITSTATUS(status)?
 }
 
 //method to print cuser and csys
@@ -54,8 +54,6 @@ int main() {
     struct tms clocks;
     //if child = 0
     if(child == 0) {
-        //make process sleep for 10 seconds
-        sleep(10);
         //do child process
         childProcess(getppid(), getpid());
     }
