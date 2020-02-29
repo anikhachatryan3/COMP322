@@ -23,17 +23,19 @@ void childProcess(pid_t parent, pid_t child) {
 
 //method to print user and sys
 void childTime(clock_t user, clock_t system) {
+    //print user and sys
     printf("USER: %d, SYS: %d\n", (int)user, (int)system);
 }
 
 //method for parent process
 void parentProcess(pid_t parent, pid_t pid, pid_t child, int status) {
     //print pid, ppid, cpid, and retVal
-    printf("PPID: %d, PID: %d, CPID: %d, RETVAL: %d\n", parent, pid, child, status); //WEXITSTATUS(status)?
+    printf("PPID: %d, PID: %d, CPID: %d, RETVAL: %d\n", parent, pid, child, status);
 }
 
 //method to print cuser and csys
 void parentTime(clock_t user, clock_t system) {
+    //print cuser and csys
     printf("CUSER: %d, CSYS: %d\n", (int)user, (int)system);
 }
 
@@ -78,6 +80,7 @@ int main() {
         return 1;
     }
     time(&seconds);
+    //print stop time
     printf("STOP: %ld\n", seconds);
 
     return 0;
