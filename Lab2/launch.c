@@ -13,15 +13,15 @@
 #include <sys/wait.h>
 
 //method to print the cpid
-void printCPID(pid_t child) {
+void printCPID(char* argv, pid_t child) {
     //print cpid
-    fprintf(stderr, "$$ = %d\n", child);
+    fprintf(stderr, "%s: $$ = %d\n", argv, child);
 }
 
 //method to print retval
-void printRetVal(int status) {
+void printRetVal(char* argv,int status) {
     //print retval
-    fprintf(stderr, "$? = %d\n", status);
+    fprintf(stderr, "%s: $? = %d\n", argv, status);
 }
 
 //main method
@@ -30,8 +30,6 @@ int main(int argc, char** argv) {
     if(argc > 0) {
         //create i variable to use in for loop
         int i;
-        //create status variable
-        int status;
         //fork and store in child variable
         pid_t child = fork();
         //create waiting variable
@@ -48,12 +46,17 @@ int main(int argc, char** argv) {
         }
         //if the child is a positive number
         else if(child > 0) {
+            //create status variable
+            int status;
             //print the cpid
-            printCPID(child);
+            printCPID(argv[1], child);
             //wait for child to finish
             waiting = waitpid(child, &status, WUNTRACED);
+            //print the return value of the child
+            printRetVal(argv[1], status);
         }
-        //print the return value of the child
-        printRetVal(status);
+        else {
+            printf("Error, forking failed.\n");
+        }
     }
 }
