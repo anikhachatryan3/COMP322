@@ -1,0 +1,46 @@
+# Name: Ani Khachatryan
+# Project: Lab 3 - Catcher
+
+# This is a Makefile for my lab assignment. It allows me to easily and accurately rebuild
+# the lab assignment.
+
+
+# EXECUTABLES is a Make Variable (similar to an environment variable) that lists all the
+# "executables" associated with the lab. 
+EXECUTABLES = catcher
+SRC = catcher.c
+OBJ = catcher.o
+
+# CATCHER = catcher
+# CATCHER_SRC = catcher.c
+# CATCHER_OBJ = catcher.o
+
+# The CC and CFLAGS variables are defined to ensure I'm using the native compiler and
+# that the correct command-line options are set
+CC = gcc
+CFLAGS = -g -Wall -Wextra
+
+# Here is my default target for the Makefile.  When I type make, this first target will
+# be created. I.e., all the executables
+all: $(EXECUTABLES)
+
+
+# THIS LINE MAKES CIRCULAR DEPENDENCY SINCE THERE'S ONLY 1 FILE TO COMPILE AND RUN!!
+# catcher: $(CATCHER)
+
+# On the following lines (which _must_ start with a tab), are the commands I need to type -- 
+# each time my source file is modified.
+$(EXECUTABLES): $(SRC)
+	$(CC) $(CFLAGS) -c $(SRC)
+	$(CC) $(CFLAGS) -o $@ $(OBJ)
+
+# THESE LINES MAKE CIRCULAR DEPENDENCY SINCE THERE'S ONLY 1 FILE TO COMPILE AND RUN!!
+# $(CATCHER): $(CATCHER_SRC)
+# 	$(CC) $(CFLAGS) -c $(CATCHER_SRC)
+# 	$(CC) $(CFLAGS) -o $@ $(CATCHER_OBJ)
+
+# By convention, I always have a target called
+# "clean" that I used to define all temporary
+# or intermediates.
+clean:
+	rm -f $(EXECUTABLES) $(OBJ) *~
