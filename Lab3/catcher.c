@@ -21,6 +21,7 @@ static int term = 0;
 static const char* sigs[27] = {"HUP", "INT", "QUIT", "ILL", "TRAP", "ABRT", "IOT", "BUS", "FPE","USR1", "EGV", 
                            "USR2", "PIPE", "ALRM", "TERM", "STKFLT", "CHLD", "CONT", "TSTP", "TTIN", "TTOU", 
                            "URG", "XCPU", "XFSZ", "TALRM", "PROF", "WINCH"};
+void totalCount();
 
 //method to print PID on stderr
 void statLine(int pid) {
@@ -34,15 +35,33 @@ void sigCatch(int num) {
     time_t seconds;
     //how many seconds
     time(&seconds);
+    //if num equals 15 (TERM)
     if(num == 15) {
+        //increment
         term++;
     }
+    //otherwise
     else {
+        //term equals 0
         term = 0;
     }
+    //if number is the same as SIGUSR1
+    if(num == SIGUSR1) {
+        //print for SIGUSR1
+        fprintf(stdout, "SIGUSR1 caught at %ld\n", seconds);
+    }
+    //if number is the same as SIGUSR2
+    else if(num == SIGUSR2) {
+        //print for SIGUSR2
+        fprintf(stdout, "SIGUSR2 caught at %ld\n", seconds);
+    }
+    //otherwise
+    else {
+        //print signal and seconds (time) on stdout
+        fprintf(stdout, "SIG%s caught at %ld\n", sigs[num-1], seconds);
+    }
+    //increment counter for total signals
     count++;
-    //print signal and seconds (time) on stdout
-    fprintf(stdout, "SIG%s caught at %ld\n", sigs[num-1], seconds);
 }
 
 //method to count how many SIGTERM signals have been caught
@@ -52,11 +71,8 @@ void termCounter() {
         //pause program
         pause();
     }
-    //if SIGTERM counter equals 3
-    if(term == 3) {
-        //successfully exit
-        exit(EXIT_SUCCESS);
-    }
+    //call totalCount method
+    totalCount();
 }
 
 //handler method used to check each argument
@@ -67,19 +83,27 @@ void sig(int argc, char** argv) {
     for(i = 1; i < argc; i++) {
         for(j = 0; j < 27; j++) {
             //if signals compared together = 0
-            if(strcmp(argv[i], sigs[j]) == 0) {
-                //signal
+            if(strcmp(argv[i], "USR1") == 0) {
+                //signal for SIGUSR1
+                signal(SIGUSR1, sigCatch);
+            }
+            if(strcmp(argv[i], "USR2") == 0) {
+                //signal for SIGUSR2
+                signal(SIGUSR2, sigCatch);
+            }
+            else {
                 signal(j+1, sigCatch);
             }
         }
     }
+    //call termCounter method
     termCounter();
 }
 
 //method to print total number of signals caught
 void totalCount() {
     //print on stderr
-    fprintf(stderr, "catcher: Total signals count = %d", count);
+    fprintf(stderr, "catcher: Total signals count = %d\n", count);
 }
 
 //main method
@@ -88,8 +112,6 @@ int main(int argc, char** argv) {
     statLine(getpid());
     //calling sig method
     sig(argc, argv);
-    //call totalCount method
-    totalCount();
     
     return 0;
 }
