@@ -41,8 +41,8 @@ void sigCatch(int num) {
         term = 0;
     }
     count++;
-    //print signal and seconds on stdout
-    printf("SIG%s caught at %ld", sigs[num-1], seconds);
+    //print signal and seconds (time) on stdout
+    fprintf(stdout, "SIG%s caught at %ld\n", sigs[num-1], seconds);
 }
 
 //method to count how many SIGTERM signals have been caught
