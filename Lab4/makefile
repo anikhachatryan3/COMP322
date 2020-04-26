@@ -20,11 +20,13 @@ CFLAGS = -g -Wall -Wextra
 # be created. I.e., all the executables
 all: $(EXECUTABLES)
 
+dining-p: $(EXECUTABLES)
+
 # On the following lines (which _must_ start with a tab), are the commands I need to type -- 
 # each time my source file is modified.
 $(EXECUTABLES): $(SRC)
-	$(CC) $(CFLAGS) -c $(SRC)
-	$(CC) $(CFLAGS) -o $@ $(OBJ)
+	$(CC) $(CFLAGS) -lpthread -c $(SRC)
+	$(CC) $(CFLAGS) -lpthread -o $@ $(OBJ)
 
 # By convention, I always have a target called
 # "clean" that I used to define all temporary
