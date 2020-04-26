@@ -18,11 +18,14 @@
 #include <sys/stat.h>
 #include <semaphore.h>
 
-//globals
-#define SEM_FILE1  "/chopstick1"
-#define SEM_FILE2  "/chopstick2"
-sem_t* rightSide;
-sem_t* leftSide;
+//globals - I decided to use these as globals because the program would always 
+//          give warnings and errors when they were local variables. I wanted to 
+//          make sure that the program can compile with as little warnings and 
+//          errors as possible.
+#define CHOPSTICK1  "/chopstick1"
+#define CHOPSTICK2  "/chopstick2"
+sem_t* rSide;
+sem_t* lSide;
 
 //global done variable that is used to end program
 int done;
@@ -31,51 +34,60 @@ int done;
 void eat(int phil) {
     //print message
 	fprintf(stdout, "Philosopher #%d is eating\n", phil);
-    //variable that will be used for usleep
-    int eatTime = rand()%(1000000+1);
+    //variable that will be used for usleep (mod 1 million done because of slack comment from student)
+    int eating = rand()%(1000000+1);
     //sleep for random amount of time
-	usleep((useconds_t) eatTime);
+	usleep((useconds_t) eating);
 }
 
 //think method that prints philosopher thinking message
 void think(int phil) {
     //print message
 	fprintf(stdout, "Philosopher #%d is thinking\n", phil);
-    //variable that will be used for usleep
-    int thinkTime = rand()%(1000000+1);
+    //variable that will be used for usleep (mod 1 million done because of slack comment from student)
+    int thinking = rand()%(1000000+1);
     //sleep for random amount of time
-	usleep((useconds_t) thinkTime);
+	usleep((useconds_t) thinking);
 }
 
 //method to set done to number
-void setVal() {
+void giveDoneVal() {
     //initialized
 	done = 1;
 }
 
 //method to get done variable
-int getVal() {
+int getDoneVal() {
     //get value in done
 	return done;
 }
 
 //signal handler method
-void signalHandler() {
-    //go to setVal() method
-	setVal();
+void checkSig() {
+    //go to giveDoneVal() method
+	giveDoneVal();
+}
+
+//method to remove system resources
+void closeSems() {
+    //close right side
+    sem_close(rSide);
+    //close left side
+    sem_close(lSide);
+    //unlink
+    sem_unlink(CHOPSTICK1);
+    //unlink
+    sem_unlink(CHOPSTICK2);
+    //destroy right side
+    sem_destroy(rSide);
+    //destroy left side
+    sem_destroy(lSide);
 }
 
 //main method
 int main(int argc, char** argv) {
-    //if there's less than 3 args given
-	if(argc != 3) {
-        //print message to stderr
-		fprintf(stdout, "Error: Please give number of seats and position.\n");
-        //exit
-		return 1;
-	}
-    //otherwise
-	else {
+    //if argc has exactly 3 values
+	if(argc == 3) {
         //create and initialize seats variable
         int seats = atoi(argv[1]);
         //create and initialize position variable
@@ -88,62 +100,43 @@ int main(int argc, char** argv) {
         //otherwise
         else {
             //create and initialize cycles variable
-            static int cycles = 0;
+            int cycles = 0;
             //send signal to sigHandler function
-            signal(SIGTERM, signalHandler);
+            signal(SIGTERM, checkSig);
             //initialize right-handed
-            rightSide = sem_open(SEM_FILE1, O_CREAT|O_EXCL, 0660, 1);
+            rSide = sem_open(CHOPSTICK1, O_CREAT, 0660, 1);
             //initialize left-handed
-            leftSide = sem_open(SEM_FILE2, O_CREAT|O_EXCL, 0660, 1);
-            //if right-handed failed
-            if(rightSide == SEM_FAILED) {
-                //sem_open
-                rightSide = sem_open(SEM_FILE1, 0);
+            lSide = sem_open(CHOPSTICK2, O_CREAT, 0660, 1);
+            //do the code below
+            do {
+                //wait on right-handed semaphore
+                sem_wait(rSide);
+                //wait on left-handed semaphore
+                sem_wait(lSide);
+                //send arg to eat function
+                eat(position);
+                //signal that right side is free
+                sem_post(rSide);
+                //signal that left side is free
+                sem_post(lSide);
+                //send arg to think function
+                think(position);
+                //increment counter
+                cycles++;
             }
-            //if left-handed failed
-            if(leftSide == SEM_FAILED) {
-                //sem_open
-                leftSide = sem_open(SEM_FILE2, 0);
-            }
-            if(!getVal()) {
-                //do the code below
-                do {
-                    //wait on right-handed semaphore
-                    sem_wait(rightSide);
-                    //wait on left-handed semaphore
-                    sem_wait(leftSide);
-                    //send arg to eat function
-                    eat(atoi(argv[argc-1]));
-                    //signal that right side is free
-                    sem_post(rightSide);
-                    //signal that left side is free
-                    sem_post(leftSide);
-                    //send arg to think function
-                    think(atoi(argv[argc-1]));
-                    //increment counter
-                    cycles++;
-                    printf("Cycles: %d\n", cycles);
-                }
-                while(!getVal());
-            } 
+            while(getDoneVal()); 
             //if done
-            if(getVal()) {
+            if(getDoneVal() != 1) {
                 //print message to stderr
-                fprintf(stderr, "\nPhilosopher %d completed %d cycles.\n", atoi(argv[argc-1]), cycles);
+                fprintf(stderr, "Philosopher #%d completed %d cycles.\n", position, cycles);
             }
-            //close right side
-            sem_close(rightSide);
-            //close left side
-            sem_close(leftSide);
-            //unlink
-            sem_unlink(SEM_FILE1);
-            //unlink
-            sem_unlink(SEM_FILE2);
-            //destroy right side
-            sem_destroy(rightSide);
-            //destroy left side
-            sem_destroy(leftSide);
+            closeSems();
         }
 	}
+    //otherwise
+    else {
+        //print message to stderr
+		fprintf(stdout, "Error: Please give number of seats and position.\n");
+    }
     return 0;
 }
