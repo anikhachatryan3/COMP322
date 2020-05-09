@@ -10,8 +10,6 @@
 
 //main method
 int main(int argc, char** argv) {
-    //making argc void to get rid of warning
-    // (void) argc;
     //create file variable
     FILE* logfile;
     //initialize logfile
@@ -23,10 +21,14 @@ int main(int argc, char** argv) {
     }
     //otherwise
     else {
+        //if compared is 0
         if(strcmp("mole1", argv[1]) == 0) {
+            //print pop message in logfile
             fputs("Pop mole1\n", logfile);
         }
+        //if compared is 0
         else if(strcmp("mole2", argv[1]) == 0) {
+            //print pop message in logfile
             fputs("Pop mole2\n", logfile);
         }
         //print pop messages
