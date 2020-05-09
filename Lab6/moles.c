@@ -24,12 +24,12 @@ int main(int argc, char** argv) {
         //if compared is 0
         if(strcmp("mole1", argv[1]) == 0) {
             //print pop message in logfile
-            fputs("Pop mole1\n", logfile);
+            fprintf(logfile, "Pop %s\n", argv[1]);
         }
         //if compared is 0
         else if(strcmp("mole2", argv[1]) == 0) {
             //print pop message in logfile
-            fputs("Pop mole2\n", logfile);
+            fprintf(logfile, "Pop %s\n", argv[1]);
         }
         //print pop messages
         // fputs(logfile, "Pop %s\n", argv[1]);
