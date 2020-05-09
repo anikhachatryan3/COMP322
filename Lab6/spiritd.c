@@ -74,17 +74,18 @@ void newMole() {
 }
 
 //method to check signals
-void checkSigs(sig) {
+void checkSigs(int sig) {
     //re-register checkSigs
     signal(sig, checkSigs);
     //if given signal is SIGTERM
     if(sig == SIGTERM) {
-        //kill mole1
+        //kill both moles
         kill(mole1, SIGKILL);
-        //kill mole2
         kill(mole2, SIGKILL);
         //kill the daemon process
         kill(daemonPID, SIGKILL);
+        //exit sucessfully
+        exit(0);
     }
     //if given signal is SIGUSR1
     else if(sig == SIGUSR1) {
@@ -104,12 +105,12 @@ void checkSigs(sig) {
 
 //method that gives signals
 void signals() {
-    //SIGTERM signal
-    signal(SIGTERM, checkSigs);
     //SIGUSR1 signal
     signal(SIGUSR1, checkSigs);
     //SIGUSR2 signal
     signal(SIGUSR2, checkSigs);
+    //SIGTERM signal
+    signal(SIGTERM, checkSigs);
 }
 
 //method to fork
@@ -124,8 +125,15 @@ void makeFork() {
     struct rlimit rLims;
     //create i variable
     unsigned int i;
+    //if fork value is greater than 0
+    if(forking > 0) {
+        //print messsage to let user know it's parent process
+        printf("Parent process exiting\n");
+        //terminate parent process (make parent exit)
+        exit(0);
+    }
     //if fork value is 0
-    if(forking == 0) {
+    else if(forking == 0) {
         //set file creation mask to 0
         umask(0);
         //call method to make signals
@@ -139,7 +147,7 @@ void makeFork() {
         //change directory to "/"
         chdir("/");
         //initialize opening variable
-        opening = open("/dev/null", O_RDWR);
+        opening = open("/dev/null", O_CREAT, 0777);
         //get limit
         getrlimit(RLIMIT_NOFILE, &rLims);
         //if the limit is infinity
@@ -149,7 +157,7 @@ void makeFork() {
         }
         //for all i that is less than the max
         for(i = 0; i < rLims.rlim_max; i++) {
-            //close them
+            //close them all
             close(i);
         }
         //initialize fDes1 variable
@@ -161,12 +169,6 @@ void makeFork() {
             //pause
             pause();
         }
-    }
-    //if fork value is greater than 0
-    else if(forking > 0) {
-        printf("Parent process\n");
-        //terminate parent process (make parent exit)
-        exit(0);
     }
     //otherwise
     else {
