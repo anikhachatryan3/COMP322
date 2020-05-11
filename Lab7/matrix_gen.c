@@ -6,6 +6,7 @@
 //         read the blocks from a text file asynchronously. (matrix_gen is a program that
 //         creates a file of integers that represents a NxN matrix.)
 
+#include <time.h>
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,8 +29,9 @@ void makeMatrix(char* argv) {
     }
     //otherwise
     else{
+        srand(time(0));
         //create and initialize txtFile variable
-        FILE* matrixFile = fopen("matrix_file.txt", "w");
+        FILE* matrixFile = fopen("matrix_file.size", "w");
         //for each i that's smaller than the given size
         for(i = 0; i < size; i++) {
             //allocate space in that row
@@ -45,7 +47,7 @@ void makeMatrix(char* argv) {
             fprintf(matrixFile, "\n");
         }
         //print success message
-        printf("Matrix created successfully in matrix_file.txt\n");
+        printf("Matrix created successfully in matrix_file.size\n");
         //close the file
         fclose(matrixFile);
     }
