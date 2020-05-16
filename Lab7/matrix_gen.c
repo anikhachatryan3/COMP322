@@ -30,8 +30,6 @@ void makeMatrix(char* argv) {
     //otherwise
     else{
         srand(time(0));
-        //create and initialize txtFile variable
-        FILE* matrixFile = fopen("matrix_file.size", "w");
         //for each i that's smaller than the given size
         for(i = 0; i < size; i++) {
             //allocate space in that row
@@ -41,15 +39,11 @@ void makeMatrix(char* argv) {
                 //that position in the matrix is given a random number between -100 and 100
                 matrix[i][j] = (rand()%(100 - (-100) + 1)) - 100;
                 //store the generated matrix number in a file
-                fprintf(matrixFile, "%4d", *(*(matrix+i)+j));
+                fprintf(stdout, "%4d", *(*(matrix+i)+j));
             }
             //after a full row, start over on a new line
-            fprintf(matrixFile, "\n");
+            fprintf(stdout, "\n");
         }
-        //print success message
-        printf("Matrix created successfully in matrix_file.size\n");
-        //close the file
-        fclose(matrixFile);
     }
 }
 
